@@ -1,12 +1,11 @@
-
+// Unsolved WA on test 32
 
 #include <bits/stdc++.h>
 
 using namespace std;
 
-
-#define MAXN 100005
-#define pii pair <int, long long>
+#define MAXN 300005
+#define pii pair <int, int>
 #define piii pair <int, pii>
 #define fi first
 #define se second
@@ -22,68 +21,46 @@ using namespace std;
 
 vector<pii> adj[MAXN];
 
-long long d[3][MAXN];
-bool vis[MAXN];
-int dIdx;
 
-
-void dfs(int u) {
-	vis[u] = true;
+void dfs(int u, vector<long long>& v, long long d, int par) {
+	v[u] = d;
 	for(auto p: adj[u]) {
-		if(!vis[p.fi]) {
-			d[dIdx][p.fi] = d[dIdx][u] + p.se;
-			dfs(p.fi);
-
-		}
-	}
-}
-
-void init(int n) {
-	for(int i=1; i<=n; i++) {
-		vis[i] = false;
-		d[dIdx][i] = 0;
+		if(par!=p.fi) dfs(p.fi, v, d+p.se, u);
 	}
 }
 
 void solve(int n) {
-	dIdx = 0;
-	init(n);
+	vector <long long> d0(n+1, 0);
+	vector <long long> d1(n+1, 0);
+	vector <long long> d2(n+1, 0);
 
-	dfs(1);
+	dfs(1, d0, 0, -1);
 
-	long long m = -1;
+	long long m = 0;
 	int idx = -1, idx2 = -1;
 
 	for(int i=1; i<=n; i++) {
-		if(d[0][i] > m) {
-			m = d[0][i];
+		if(d0[i] > m) {
+			m = d0[i];
 			idx = i;
 		}
 	}
 
-	dIdx = 1;
-	init(n);
+	dfs(idx, d1, 0, -1);
 
-	dfs(idx);
-
-	m = -1;
+	m = 0;
 	for(int i=1; i<=n; i++) {
-		if(d[1][i] > m) {
-			m = d[1][i];
+		if(d1[i] > m) {
+			m = d1[i];
 			idx2 = i;
 		}
 	}
 
-	dIdx = 2;
-	init(n);
-
-	dfs(idx2);
+	dfs(idx2, d2, 0, -1);
 
 	for(int i=1; i<=n; i++) {
-		printf("%lld", max(d[1][i], d[2][i]));
-		if(i!=n) printf(" ");
-	}
-	printf("\n");
+		cout << max(d1[i], d2[i]) << " ";
+	} cout << '\n';
 
 }
 
@@ -93,22 +70,20 @@ void clr(int n) {
 
 
 int32_t main(){
-	read();
+	//read();
 	//write();
-	//fst;
-
+	fst;
 	int t;
-	si(t);
+	cin >> t;
 	while(t--) {
 		int n;
-		si(n);
+		cin >> n;
 
-		for(int i=1; i<=n-1; i++) {
-			int u, v; long long dis;
-			si(u); si(v); sil(dis);
-
-			adj[u].pb({v, dis});
-			adj[v].pb({u, dis});
+		for(int i=0; i<n-1; i++) {
+			int u, v, d;
+			cin >> u >> v >> d;
+			adj[u].pb({v, d});
+			adj[v].pb({u, d});
 		}
 
 		solve(n);
